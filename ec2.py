@@ -144,7 +144,8 @@ try:
 except ImportError:
     pass
 
-import configparser
+from six.moves import configparser
+# import configparser
 from collections import defaultdict
 
 try:
