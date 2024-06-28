@@ -3,31 +3,45 @@
 
 - name: Removing old version of JAVA from Amazon Linux
   yum:
-    name: java-1.7.0-openjdk
+#    name: java-1.7.0-openjdk
+    name: java-1.8.0-openjdk
     state: absent
 
-- name: Install specific supported version of JAVA
-  yum:
-    name: java-1.8.0-openjdk
-    state: present
+- name: Install java 11
+  shell: sudo rpm --import https://yum.corretto.aws/corretto.key && sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo && sudo yum install -y java-11-amazon-corretto-devel
 
 - name: Add Jenkins repository
-  shell: wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+  shell: wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 
-- name: Import Jenkins GPG key 
-  rpm_key:  
-    state: present 
-    key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-    # key: https://pkg.jenkins.io/redhat/jenkins.io.key 
+- name: Import Jenkins GPG key
+#  rpm_key:
+#    state: present
+#    key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+  shell: sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
 
-- name: Install Jenkins 
-  yum: 
-    name: jenkins-2.463
-    enablerepo: jenkins 
-    state: present 
+#- name: Upgrade yum
+#  shell: sudo yum upgrade -y
 
-- name: Start Jenkins 
-  service: 
-    name: jenkins 
-    enabled: yes 
+- name: Install Jenkins
+  yum:
+#    name: jenkins-2.164.1
+#    name: jenkins-2.361.4
+    name: jenkins-2.387.3
+    enablerepo: jenkins
+    state: present
+    disable_gpg_check: yes
+
+#- name: Install Jenkins dependency
+#  shell: sudo yum install fontconfig java-17-openjdk -y
+
+#- name: Install Jenkins
+#  shell: sudo yum install jenkins-2.60.1 -y --nogpgcheck
+
+#- name: Reload daemon
+#  shell: sudo systemctl daemon-reload
+
+- name: Start Jenkins
+  service:
+    name: jenkins
+    enabled: yes
     state: started
